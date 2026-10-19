@@ -135,7 +135,7 @@ ARG PJSIP_REF=2.14.1
 RUN mkdir -p "${HOME}/claudetmp" \
     && git clone --depth 1 \
         https://github.com/tdlib/td.git \
-        "${HOME}/claudetmp/td"
+        "${HOME}/claudetmp/td" \
     && git clone --depth 1 --branch "${PJSIP_REF}" \
         https://github.com/pjsip/pjproject.git \
         "${HOME}/claudetmp/pjproject-clang"
