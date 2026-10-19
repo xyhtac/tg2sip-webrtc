@@ -115,12 +115,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV CC=clang-20
 ENV CXX=clang++-20
 
-RUN clang++-20 --version
-
 # Fail early if the base image's compiler or CMake doesn't meet the
 # requirements. This makes build-environment failures obvious in CI logs.
 RUN cmake --version \
-    && clang++ --version \
+    && clang++-20 --version \
     && test "$(cmake --version | head -n1 | awk '{print $3}' | cut -d. -f1)" -ge 3
 
 # -----------------------------------------------------------------------------
