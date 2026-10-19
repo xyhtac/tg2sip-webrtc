@@ -237,7 +237,7 @@ RUN set -eux; \
     echo "========== Compile command database =========="; \
     find /app/tg2sip -name compile_commands.json -print
 
-    
+      
 
 RUN cmake --preset clang-libcxx \
     && cmake --build build-clang --parallel "${JOBS}" \
