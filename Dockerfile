@@ -133,7 +133,7 @@ ARG TDLIB_REF=v1.8.38
 ARG PJSIP_REF=2.14.1
 
 RUN mkdir -p "${HOME}/claudetmp" \
-    && git clone --depth 1 --branch "${TDLIB_REF}" \
+    && git clone --depth 1 \
         https://github.com/tdlib/td.git \
         "${HOME}/claudetmp/td" \
     && git clone --depth 1 --branch "${PJSIP_REF}" \
