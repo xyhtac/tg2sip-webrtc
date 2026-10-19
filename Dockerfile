@@ -225,26 +225,32 @@ RUN set -eux; \
 ARG JOBS=4
 
 RUN set -eux; \
-    echo "========== All endpoint.hpp copies =========="; \
-    find /app /opt/buildhome/claudetmp \
-        -path '*/pjsua2/endpoint.hpp' -print 2>/dev/null; \
-    echo "========== codecEnum declarations =========="; \
-    grep -R -n 'codecEnum()' \
-        /app /opt/buildhome/claudetmp \
-        --include=endpoint.hpp 2>/dev/null || true; \
-    echo "========== CMake configuration files =========="; \
-    find /app/tg2sip -name CMakeCache.txt -print; \
-    echo "========== Compile command database =========="; \
-    find /app/tg2sip -name compile_commands.json -print
+    echo "========== Build files =========="; \
+    find /app/tg2sip -maxdepth 4 \
+        \( -name build.ninja -o -name Makefile -o -name CMakeCache.txt \
+           -o -name compile_commands.json \) -print; \
+    echo "========== Header identity =========="; \
+    sha256sum \
+        /opt/buildhome/claudetmp/pjproject-clang/pjsip/include/pjsua2/endpoint.hpp \
+        /opt/buildhome/claudetmp/toolchain-libcxx-install/include/pjsua2/endpoint.hpp; \
+    echo "========== PJSUA2 include paths in project =========="; \
+    grep -R -n -E 'PJSUA2|pjproject-clang|toolchain-libcxx-install|include_directories|target_include_directories' \
+        /app/tg2sip --include='CMakeLists.txt' --include='*.cmake' \
+        --include='*.json' 2>/dev/null | head -160 || true
 
-      
+#RUN cmake --preset clang-libcxx \
+#    && cmake --build build-clang --parallel "${JOBS}" \
+#    && test -x build-clang/tg2sip-webrtc \
+#    && test -x build-clang/tg2sip-gendb \
+#    && test -f build-clang/tg2sip.conf.sample
+
 
 RUN cmake --preset clang-libcxx \
-    && cmake --build build-clang --parallel "${JOBS}" \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+    && cmake --build build-clang --parallel "${JOBS}" --verbose \
     && test -x build-clang/tg2sip-webrtc \
     && test -x build-clang/tg2sip-gendb \
     && test -f build-clang/tg2sip.conf.sample
-
 # -----------------------------------------------------------------------------
 # 7. Runtime defaults.
 #
