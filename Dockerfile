@@ -79,6 +79,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ccache \
         zlib1g-dev \
         libssl-dev \
+        libpulse-dev \
         libopus-dev \
         libasound2-dev \
         libavcodec-dev \
