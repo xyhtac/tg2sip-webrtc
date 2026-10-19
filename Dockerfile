@@ -225,31 +225,19 @@ RUN set -eux; \
 ARG JOBS=4
 
 RUN set -eux; \
-    echo "========== Compiler versions =========="; \
-    clang --version || true; \
-    clang++ --version || true; \
-    echo "========== PJSIP source revision =========="; \
-    git -C /opt/buildhome/claudetmp/pjproject-clang log -1 --format='%H %s' || true; \
-    echo "========== PJSIP version macros =========="; \
-    grep -R -n -E 'PJ_VERSION(_MAJOR|_MINOR|_REV)?[[:space:]]' \
-        /opt/buildhome/claudetmp/pjproject-clang/pjlib/include \
-        /opt/buildhome/claudetmp/toolchain-libcxx-install/include/pj \
-        2>/dev/null | head -60 || true; \
-    echo "========== Codec API declarations in installed headers =========="; \
-    grep -R -n -E 'codecEnum|codecSetPriority|pjsua_enum_codecs|pjsua_codec_set_priority' \
-        /opt/buildhome/claudetmp/toolchain-libcxx-install/include \
-        2>/dev/null | head -100 || true; \
-    echo "========== Codec API declarations in PJSIP source =========="; \
-    grep -R -n -E 'codecEnum|codecSetPriority|pjsua_enum_codecs|pjsua_codec_set_priority' \
-        /opt/buildhome/claudetmp/pjproject-clang/pjsip/include \
-        /opt/buildhome/claudetmp/pjproject-clang/pjsip/src \
-        /opt/buildhome/claudetmp/pjproject-clang/pjmedia/include \
-        2>/dev/null | head -100 || true; \
-    echo "========== sip.cpp codec selection =========="; \
-    sed -n '175,205p' /app/tg2sip/sip.cpp; \
-    echo "========== CMake compiler and include configuration =========="; \
-    grep -E 'CMAKE_(C|CXX)_COMPILER:|CMAKE_PREFIX_PATH:|CMAKE_CXX_FLAGS:|PJPROJECT|PJSIP' \
-        /app/tg2sip/build-clang/CMakeCache.txt 2>/dev/null | head -100 || true
+    echo "========== All endpoint.hpp copies =========="; \
+    find /app /opt/buildhome/claudetmp \
+        -path '*/pjsua2/endpoint.hpp' -print 2>/dev/null; \
+    echo "========== codecEnum declarations =========="; \
+    grep -R -n 'codecEnum()' \
+        /app /opt/buildhome/claudetmp \
+        --include=endpoint.hpp 2>/dev/null || true; \
+    echo "========== CMake configuration files =========="; \
+    find /app/tg2sip -name CMakeCache.txt -print; \
+    echo "========== Compile command database =========="; \
+    find /app/tg2sip -name compile_commands.json -print
+
+      
 
 RUN cmake --preset clang-libcxx \
     && cmake --build build-clang --parallel "${JOBS}" \
