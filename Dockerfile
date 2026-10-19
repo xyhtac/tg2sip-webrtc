@@ -59,9 +59,10 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
-        clang \
-        libc++-dev \
-        libc++abi-dev \
+        clang-20 \
+        libclang-rt-20-dev \
+        libc++-20-dev \
+        libc++abi-20-dev \
         cmake \
         ninja-build \
         pkg-config \
@@ -109,9 +110,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxrandr-dev \
         libxrender-dev \
         libxtst-dev \
-        clang-18 \
-        libclang-rt-18-dev \
     && rm -rf /var/lib/apt/lists/*
+
+ENV CC=clang-20
+ENV CXX=clang++-20
+
+RUN clang++-20 --version
 
 # Fail early if the base image's compiler or CMake doesn't meet the
 # requirements. This makes build-environment failures obvious in CI logs.
@@ -190,10 +194,6 @@ RUN test -f "${PREFIX}/lib/pkgconfig/libpjproject.pc" \
 
 COPY . /app
 
-# RUN test -f third_party/ntgcalls/CMakeLists.txt \
-#    && test -f patches/0001-tg2sip-ntgcalls-add_subdirectory-fixes.patch \
-#    && test -x buildenv/rename-webrtc-openssl-symbols.sh \
-#    && test -x buildenv/rename-webrtc-libsrtp-symbols.sh
 
 RUN set -eux; \
     pwd; \
