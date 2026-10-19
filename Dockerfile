@@ -59,10 +59,9 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
-        clang-20 \
-        libclang-rt-20-dev \
-        libc++-20-dev \
-        libc++abi-20-dev \
+        clang \
+        libc++-dev \
+        libc++abi-dev \
         cmake \
         ninja-build \
         pkg-config \
@@ -110,15 +109,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxrandr-dev \
         libxrender-dev \
         libxtst-dev \
+        clang-18 \
+        libclang-rt-18-dev \
+        clang-20 \
+        libclang-rt-20-dev \
     && rm -rf /var/lib/apt/lists/*
-
-ENV CC=clang-20
-ENV CXX=clang++-20
 
 # Fail early if the base image's compiler or CMake doesn't meet the
 # requirements. This makes build-environment failures obvious in CI logs.
 RUN cmake --version \
-    && clang++-20 --version \
+    && clang++ --version \
     && test "$(cmake --version | head -n1 | awk '{print $3}' | cut -d. -f1)" -ge 3
 
 # -----------------------------------------------------------------------------
