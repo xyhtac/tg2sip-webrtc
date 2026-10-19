@@ -190,10 +190,21 @@ RUN test -f "${PREFIX}/lib/pkgconfig/libpjproject.pc" \
 
 COPY . /app
 
-RUN test -f third_party/ntgcalls/CMakeLists.txt \
-    && test -f patches/0001-tg2sip-ntgcalls-add_subdirectory-fixes.patch \
-    && test -x buildenv/rename-webrtc-openssl-symbols.sh \
-    && test -x buildenv/rename-webrtc-libsrtp-symbols.sh
+# RUN test -f third_party/ntgcalls/CMakeLists.txt \
+#    && test -f patches/0001-tg2sip-ntgcalls-add_subdirectory-fixes.patch \
+#    && test -x buildenv/rename-webrtc-openssl-symbols.sh \
+#    && test -x buildenv/rename-webrtc-libsrtp-symbols.sh
+
+RUN set -eux; \
+    pwd; \
+    ls -l third_party/ntgcalls/CMakeLists.txt; \
+    ls -l patches/0001-tg2sip-ntgcalls-add_subdirectory-fixes.patch; \
+    ls -l buildenv/rename-webrtc-openssl-symbols.sh; \
+    ls -l buildenv/rename-webrtc-libsrtp-symbols.sh; \
+    test -f third_party/ntgcalls/CMakeLists.txt; \
+    test -f patches/0001-tg2sip-ntgcalls-add_subdirectory-fixes.patch; \
+    test -x buildenv/rename-webrtc-openssl-symbols.sh; \
+    test -x buildenv/rename-webrtc-libsrtp-symbols.sh    
 
 # -----------------------------------------------------------------------------
 # 6. Configure and compile the actual application.
