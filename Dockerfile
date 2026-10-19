@@ -109,6 +109,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxrandr-dev \
         libxrender-dev \
         libxtst-dev \
+        clang-18 \
+        libclang-rt-18-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Fail early if the base image's compiler or CMake doesn't meet the
