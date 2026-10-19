@@ -80,6 +80,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         zlib1g-dev \
         libssl-dev \
         libopus-dev \
+        libasound2-dev \
         libavcodec-dev \
         libavformat-dev \
         libavutil-dev \
