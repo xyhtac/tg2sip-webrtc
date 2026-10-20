@@ -236,17 +236,8 @@ ARG JOBS=4
 RUN cmake --preset clang-libcxx \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
-RUN set -eux; \
-    cd /app/tg2sip; \
-    echo "========== endpoint.hpp selected by compiler =========="; \
-    printf '#include <pjsua2/endpoint.hpp>\n' | \
-      /usr/bin/clang++-20 \
-        -stdlib=libc++ \
-        -isystem /opt/buildhome/claudetmp/toolchain-libcxx-install/include \
-        -H -fsyntax-only -x c++ - 2>&1; \
-    echo "========== codecEnum declaration =========="; \
-    grep -n -B 4 -A 5 'codecEnum()' \
-      /opt/buildhome/claudetmp/toolchain-libcxx-install/include/pjsua2/endpoint.hpp
+RUN sed -n '1640,1685p' \
+  /opt/buildhome/claudetmp/toolchain-libcxx-install/include/pjsua2/endpoint.hpp
 
 RUN cmake --build build-clang --parallel "${JOBS}" --verbose \
     && test -x build-clang/tg2sip-webrtc \
