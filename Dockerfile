@@ -224,19 +224,7 @@ RUN set -eux; \
 
 ARG JOBS=4
 
-RUN set -eux; \
-    echo "========== Build files =========="; \
-    find /app/tg2sip -maxdepth 4 \
-        \( -name build.ninja -o -name Makefile -o -name CMakeCache.txt \
-           -o -name compile_commands.json \) -print; \
-    echo "========== Header identity =========="; \
-    sha256sum \
-        /opt/buildhome/claudetmp/pjproject-clang/pjsip/include/pjsua2/endpoint.hpp \
-        /opt/buildhome/claudetmp/toolchain-libcxx-install/include/pjsua2/endpoint.hpp; \
-    echo "========== PJSUA2 include paths in project =========="; \
-    grep -R -n -E 'PJSUA2|pjproject-clang|toolchain-libcxx-install|include_directories|target_include_directories' \
-        /app/tg2sip --include='CMakeLists.txt' --include='*.cmake' \
-        --include='*.json' 2>/dev/null | head -160 || true
+
 
 #RUN cmake --preset clang-libcxx \
 #    && cmake --build build-clang --parallel "${JOBS}" \
@@ -246,11 +234,18 @@ RUN set -eux; \
 
 
 RUN cmake --preset clang-libcxx \
-    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-    && cmake --build build-clang --parallel "${JOBS}" --verbose \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+RUN set -eux; \
+    echo "========== sip.cpp compile command =========="; \
+    python3 -c 'import json; d=json.load(open("build-clang/compile_commands.json")); [print(x.get("command", " ".join(x.get("arguments", [])))) for x in d if x["file"].endswith("/sip.cpp") or x["file"] == "sip.cpp"]'
+
+RUN cmake --build build-clang --parallel "${JOBS}" --verbose \
     && test -x build-clang/tg2sip-webrtc \
     && test -x build-clang/tg2sip-gendb \
     && test -f build-clang/tg2sip.conf.sample
+
+
 # -----------------------------------------------------------------------------
 # 7. Runtime defaults.
 #
